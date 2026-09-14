@@ -1,180 +1,292 @@
 # 🎒 Developer Backpack: Production-Grade Authentication & Authorization System
 
-> **A standalone, reference-quality full-stack authentication system** engineered with **React JS (Vite + Tailwind CSS)** on the frontend and **Node.js + Express.js + MongoDB (Mongoose)** on the backend.
+<div align="center">
 
-Built for dual purposes:
-1. **Immediate Production Integration**: Drop the modular backend and/or frontend components directly into any existing software stack with minimal configuration.
-2. **Educational & Reference Architecture**: Every single file features comprehensive explanatory comments, "You Are Here" architectural markers, and complete end-to-end lifecycle flow diagrams on critical paths.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express.js-v4.21-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
+[![React](https://img.shields.io/badge/React-v19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![MongoDB](https://img.shields.io/badge/MongoDB-v6.0%2B-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Tests](https://img.shields.io/badge/Tests-100%25_Passed-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](#-automated-testing-suites-100-pass-rate)
+
+<p align="center">
+  <strong>A standalone, reference-quality full-stack authentication and authorization system built with React (Vite + Tailwind CSS) and Node.js (Express + Mongoose).</strong>
+</p>
+
+<p align="center">
+  <a href="#-visual-showcase--screenshot-walkthrough">Screenshots</a> •
+  <a href="#-key-architecture--features">Architecture</a> •
+  <a href="#-quick-start-guide">Quick Start</a> •
+  <a href="#-api-endpoints-reference">API Reference</a> •
+  <a href="#-security-architecture--threat-model">Security Model</a> •
+  <a href="#-automated-testing-suites-100-pass-rate">Testing</a> •
+  <a href="#-integration-guide-drop-in-to-your-project">Integration Guide</a>
+</p>
+
+</div>
 
 ---
 
-## 🌟 Key Architecture & Feature Matrix
+## 📖 Overview & Purpose
 
-### 🔐 1. Authentication Lifecycle
-- **User Registration**: Clean signup with input sanitization, password complexity scoring, and automatic verification email dispatch.
-- **Email Verification**: Cryptographically secure 32-byte tokens hashed with SHA-256 before storage in MongoDB; accounts require email activation prior to login.
-- **Credential Checking & Brute-Force Lockout**: Password verification using `bcrypt` (12 salt rounds). Tracks consecutive failed attempts and locks accounts automatically for 15 minutes after 5 failures.
-- **Self-Service Password Recovery**: Secure forgot-password and reset-password flows with 1-hour expiration tokens and automatic invalidation of all other active sessions upon password modification.
-- **Change Password**: Authenticated password change enforcing verification of the current password.
+The **Developer Backpack: Authentication System** is engineered to fulfill two key software development needs:
 
-### 🛡️ 2. Two-Factor Authentication (2FA) — Dual Support
-- **Google Authenticator (TOTP - RFC 6238)**:
-  - Generates Base32 shared secret and scannable visual QR Code (`qrcode`).
-  - Encrypts TOTP secrets at rest using **AES-256-GCM** (authenticated encryption with MAC tags).
-  - Verifies 6-digit dynamic codes with configurable clock drift tolerance.
-- **Email-Based OTP**:
-  - Delivers 6-digit numeric codes directly to verified email inboxes.
-  - Hashed with SHA-256 with a strict 10-minute time-to-live (TTL).
+1. **Production-Ready Plug & Play**: A modular, secure auth foundation that you can drop directly into new or existing projects—complete with dual-token JWTs, Google Authenticator TOTP, Email OTP, single-use backup recovery codes, and dynamic role-based access control (RBAC).
+2. **Gold-Standard Reference Architecture**: Every file contains detailed architectural headers, explicit cross-file references, line-by-line documentation, and ASCII sequence diagrams on critical security paths (token rotation, refresh reuse breach detection, and MFA challenge issuance).
+
+---
+
+## 📸 Visual Showcase & Screenshot Walkthrough
+
+All screens were designed using research from modern, high-trust SaaS applications (Linear, Stripe, Untitled UI) and verified through automated end-to-end browser testing in real Google Chrome.
+
+### 1. Modern High-Trust Sign In & Sign Up
+
+<table>
+  <tr>
+    <td width="50%">
+      <h4 align="center"><b>Clean Sign In UI</b></h4>
+      <img src="screenshots/01_login_page.png" alt="Login Screen" />
+      <p align="center"><sub>Subtle elevation, atmospheric background glow, focus rings, and seamless password reveal toggle.</sub></p>
+    </td>
+    <td width="50%">
+      <h4 align="center"><b>Dynamic Password Strength Meter</b></h4>
+      <img src="screenshots/04_signup_password_strong.png" alt="Sign Up Strong Password" />
+      <p align="center"><sub>Real-time entropy evaluation checking length, lowercase, uppercase, digits, and special symbols.</sub></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 2. Multi-Factor Authentication (2FA) & Recovery
+
+<table>
+  <tr>
+    <td width="50%">
+      <h4 align="center"><b>Multi-Step 2FA Challenge</b></h4>
+      <img src="screenshots/12_login_2fa_challenge.png" alt="2FA Login Challenge" />
+      <p align="center"><sub>Paused login issuing temporary MFA ticket. Supports Authenticator App, Email OTP, or Backup Code.</sub></p>
+    </td>
+    <td width="50%">
+      <h4 align="center"><b>Emergency Backup Recovery Code</b></h4>
+      <img src="screenshots/14_login_backup_code_input.png" alt="Emergency Backup Code Input" />
+      <p align="center"><sub>One-click tab switch to redeem single-use <code>XXXX-XXXX</code> recovery codes when authenticator is lost.</sub></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h4 align="center"><b>2FA Setup Wizard: QR Code (RFC 6238)</b></h4>
+      <img src="screenshots/09_2fa_setup_step2_qr.png" alt="QR Code Setup" />
+      <p align="center"><sub>Live QR code data URL + copyable manual Base32 key with AES-256-GCM encryption at rest.</sub></p>
+    </td>
+    <td width="50%">
+      <h4 align="center"><b>2FA Setup Wizard: 8 Backup Codes</b></h4>
+      <img src="screenshots/10_2fa_setup_step3_backup_codes.png" alt="8 Backup Codes Grid" />
+      <p align="center"><sub>Formatted 2-column grid with one-click clipboard copy, <code>.txt</code> download, and email dispatch.</sub></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 3. Authenticated Dashboard & Dynamic RBAC Console
+
+<table>
+  <tr>
+    <td width="50%">
+      <h4 align="center"><b>Authenticated Admin Dashboard</b></h4>
+      <img src="screenshots/18_dashboard_admin_rbac_success.png" alt="Admin Dashboard" />
+      <p align="center"><sub>Displays user session, active role badge, 2FA health status, token strategy, and live permission tester.</sub></p>
+    </td>
+    <td width="50%">
+      <h4 align="center"><b>Role & Dynamic Permission Management</b></h4>
+      <img src="screenshots/19_admin_role_management.png" alt="Admin Role Management" />
+      <p align="center"><sub>Inspect system roles (<code>admin</code>, <code>moderator</code>, <code>user</code>), view granular permissions, and create custom roles.</sub></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+### 4. Account Lifecycle & Self-Service Password Reset
+
+<table>
+  <tr>
+    <td width="50%">
+      <h4 align="center"><b>Email Verification Activation</b></h4>
+      <img src="screenshots/06_email_verified_success.png" alt="Email Verification Success" />
+      <p align="center"><sub>Instant one-click activation via cryptographic SHA-256 email tokens.</sub></p>
+    </td>
+    <td width="50%">
+      <h4 align="center"><b>Self-Service Password Reset</b></h4>
+      <img src="screenshots/17_reset_password_page.png" alt="Password Reset" />
+      <p align="center"><sub>Secure 1-hour expiration reset token flow with live password strength validation.</sub></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🌟 Key Architecture & Features
+
+### 1. Dual-Token JWT Architecture with Token Family Rotation
+```
+Client (React Memory)               Backend API (Express)                    MongoDB
+         |                                    |                                 |
+         |----- POST /auth/login ------------>|                                 |
+         |                                    |-- Verify Bcrypt Hash ---------->|
+         |                                    |-- Create Token Family ID ------>|
+         |<---- 200 OK -----------------------|-- Set-Cookie: refreshToken ---->|
+         |      { accessToken (15m) }         |   (HttpOnly, SameSite, Secure)  |
+         |                                    |                                 |
+         |  [15 Minutes Pass: Token Expires]  |                                 |
+         |                                    |                                 |
+         |----- POST /auth/refresh ---------->|                                 |
+         |      Cookie: refreshToken (A)      |-- Verify Family Lineage ------->|
+         |                                    |-- Invalidate Token (A) -------->|
+         |                                    |-- Issue Token (B) in Family --->|
+         |<---- 200 OK -----------------------|-- Set-Cookie: refreshToken (B)->|
+         |      { new accessToken }           |                                 |
+         |                                    |                                 |
+         |  [BREACH ATTEMPT: REPLAY OLD TOKEN]|                                 |
+         |                                    |                                 |
+         |----- POST /auth/refresh ---------->|                                 |
+         |      Cookie: refreshToken (A)      |-- Detects Token (A) Revoked! -->|
+         |                                    |-- 🚨 BREACH MITIGATION TRIGGERED|
+         |                                    |-- Revoke Entire Family ID ----->|
+         |<---- 403 Forbidden ----------------|   (All sessions terminated)     |
+```
+
+- **In-Memory Access Tokens**: Short-lived (15 minutes), containing user ID, role, and granular permission array. Stored in JavaScript memory (React Context), preventing cross-site scripting (XSS) extraction from `localStorage`.
+- **HTTP-Only Rotating Refresh Tokens**: 64-byte CSPRNG hex strings stored as SHA-256 hashes in MongoDB. Delivered via `HttpOnly`, `SameSite: Strict`, and `Secure` cookies.
+- **Silent Refresh Interceptor**: An Axios response interceptor uses a Promise-based mutex queue. When multiple concurrent requests hit 401, only one refresh call is dispatched; the rest wait in queue and retry with the new token.
+- **Breach Detection & Family Revocation**: Every refresh rotates tokens within a `familyId`. If an old, already-rotated token is presented (indicating a replay or stolen cookie), the server revokes the entire token family, terminating all attacker and victim sessions immediately.
+
+---
+
+### 2. Multi-Factor Authentication (2FA) Suite
+
+- **TOTP (RFC 6238 - Google Authenticator / Authy)**:
+  - Generates Base32 shared secrets and scannable QR Code Data URLs.
+  - **AES-256-GCM Encryption**: Secrets are encrypted at rest with a 256-bit key using Authenticated Galois/Counter Mode (with unique 12-byte IVs and 16-byte authentication tags).
+  - Time-drift window tolerance supports codes ±30 seconds of system clock skew.
+- **Email OTP**:
+  - Cryptographically secure 6-digit numeric codes generated with `crypto.randomInt()`.
+  - Stored as SHA-256 hashes with a strict 10-minute TTL.
 - **Multi-Step Login Challenge**:
-  - If 2FA is active, login pauses after password check and issues a constrained, short-lived `mfaTicket` (5 mins).
-  - Access and refresh tokens are withheld until the challenge code is verified.
-- **Emergency Backup Recovery Codes**:
-  - Generates 8 single-use alphanumeric recovery codes (`XXXX-XXXX`).
-  - Stored as SHA-256 hashes in MongoDB; burnt immediately upon use.
-  - Can be copied to clipboard or downloaded as `.txt`.
-
-### 🔄 3. Production Token Architecture
-- **Short-Lived Access Tokens**: Signed JWTs containing user ID, role, and granular permissions. Expires in **15 minutes**. Stored exclusively in client React memory (never localStorage).
-- **Long-Lived Refresh Tokens**: 64-byte random tokens stored as SHA-256 hashes in MongoDB and delivered via **HTTP-only, SameSite, Secure cookies**.
-- **Token Rotation**: Every `/auth/refresh` request revokes the existing refresh token and issues a fresh pair under the same lineage (`familyId`).
-- **Reuse Breach Detection**: If an old or revoked refresh token is presented, the system detects a token replay attack and immediately invalidates the entire `familyId` across all devices.
-
-### 👑 4. Dynamic Role-Based Access Control (RBAC)
-- **Predefined System Roles**: `admin`, `moderator`, `user`.
-- **Dynamic Custom Roles**: Administrators can create custom roles at runtime (e.g. `auditor`, `content-manager`) and assign arbitrary permission matrices.
-- **Granular Permissions**: Action-based permissions (`users:read`, `users:write`, `users:delete`, `roles:manage`, `analytics:view`, etc.).
-- **Middleware Guards**: Route-level enforcement via `requireRole(...)` and `requirePermission(...)`.
-
-### 🎨 5. Modern Frontend (React + Tailwind CSS)
-- **Design Research Grounded**: Clean, high-trust SaaS aesthetic inspired by Untitled UI, Stripe, and Linear.
-- **Custom UI Library**:
-  - Segmented 6-digit `OTPInput` with auto-focus, backspace retreat, and clipboard paste support.
-  - `Button` with variants (primary, secondary, ghost, danger), sizes, and loading state spinners.
-  - `Input` with prefix icons and password visibility toggling.
-  - `Card` surfaces with subtle border geometry and atmospheric shadows.
-  - `QRCodeDisplay`, `Badge`, `Alert`, and `Modal` dialogs.
-- **Route Guards**: `ProtectedRoute`, `RoleRoute`, and `GuestRoute`.
-- **Silent Refresh Interceptor**: Axios interceptor with concurrent queue to refresh expired tokens seamlessly without disrupting active user requests.
+  - If 2FA is active, standard password check returns `requires2FA: true` and a temporary, restricted `mfaTicket` (5-minute expiration).
+  - Access and refresh tokens are withheld until the challenge code (TOTP, Email OTP, or Backup Code) is verified.
+- **Emergency Recovery Backup Codes**:
+  - 8 single-use 8-character codes (`XXXX-XXXX`).
+  - Stored as SHA-256 hashes in MongoDB; burned immediately upon redemption.
+  - Downloadable as `.txt`, copyable to clipboard, and automatically dispatched via email.
 
 ---
 
-## 📁 Folder Structure
+### 3. Dynamic Role-Based Access Control (RBAC)
+
+- **Predefined System Roles**:
+  - `admin`: Full administrative control across users, roles, and settings.
+  - `moderator`: Content moderation and user read access.
+  - `user`: Standard self-service profile and resource ownership.
+- **Custom Dynamic Roles**:
+  - Administrators can create runtime custom roles (e.g. `auditor`, `compliance-officer`, `billing-lead`) and assign any subset of granular permissions.
+- **11 Granular Permissions**:
+  ```
+  users:read    • users:write    • users:delete
+  roles:create  • roles:assign   • roles:manage
+  content:read  • content:write  • content:delete
+  analytics:view • settings:manage
+  ```
+- **Declarative Middleware & UI Gates**:
+  - Backend: `requireRole(['admin'])` and `requirePermission(['users:read'])`.
+  - Frontend: `<RoleRoute allowedRoles={['admin']}>` and `<ProtectedRoute>`.
+
+---
+
+### 4. Zero-Friction Developer Experience
+
+- **Zero-Config Local Database**: Automatically checks for a running MongoDB daemon (`localhost:27017`). If unavailable, it spins up an embedded in-memory database using `mongodb-memory-server` with zero setup required.
+- **Zero-Config Email Testing**: If custom SMTP credentials are not specified, Nodemailer automatically provisions an **Ethereal Mail** test account and logs clickable preview URLs directly to the terminal console.
+
+---
+
+## 📁 Repository Structure
 
 ```plaintext
 authentication/
-├── README.md                      # Comprehensive system documentation
+├── README.md                      # Complete system documentation (You Are Here)
+├── screenshots/                   # 19 High-resolution E2E browser UI test screenshots
+│   ├── 01_login_page.png
+│   ├── 04_signup_password_strong.png
+│   ├── 06_email_verified_success.png
+│   ├── 07_dashboard_authenticated.png
+│   ├── 09_2fa_setup_step2_qr.png
+│   ├── 10_2fa_setup_step3_backup_codes.png
+│   ├── 12_login_2fa_challenge.png
+│   ├── 14_login_backup_code_input.png
+│   ├── 18_dashboard_admin_rbac_success.png
+│   └── 19_admin_role_management.png
 │
-├── backend/                       # Node.js + Express + MongoDB Backend
-│   ├── .env.example               # Detailed environment variables with descriptions
-│   ├── package.json               # Backend dependencies & scripts
-│   ├── server.js                  # Entry point, Express pipeline & DB lifecycle
+├── backend/                       # Node.js + Express.js + MongoDB API
+│   ├── .env.example               # Complete environment variable template (Port 5001)
+│   ├── package.json               # Backend dependencies (express, mongoose, otplib, etc.)
+│   ├── server.js                  # Entry point, Express pipeline, security headers
+│   ├── test-runner.js             # 14-Step automated integration test suite
+│   ├── ui-e2e-suite.js            # 10-Phase real Chrome browser automation suite
 │   └── src/
 │       ├── config/
-│       │   ├── constants.js       # System roles, permissions, cookie & security configs
-│       │   ├── env.js             # Validated environment loader with defaults
+│       │   ├── constants.js       # System roles, permissions, security constants
+│       │   ├── env.js             # Validated environment loader with safe defaults
 │       │   ├── db.js              # Resilient MongoDB connector + in-memory fallback
 │       │   └── mailer.js          # Nodemailer with auto-Ethereal development fallback
-│       ├── models/
-│       │   ├── User.js            # User profile, bcrypt hooks, 2FA & lockout fields
-│       │   ├── RefreshToken.js    # Persistent tokens, family lineage & TTL index
-│       │   └── Role.js            # Dynamic system and custom RBAC roles
+│       ├── controllers/
+│       │   ├── authController.js  # Registration, verification, login, refresh, logout
+│       │   ├── passwordController.js # Forgot, reset, and change password flows
+│       │   ├── twoFactorController.js# TOTP, Email OTP, challenge, backup codes
+│       │   ├── userController.js  # User CRUD & profile updates
+│       │   └── roleController.js  # Dynamic custom roles & permission matrix
 │       ├── middleware/
-│       │   ├── authMiddleware.js  # JWT Bearer token verification
-│       │   ├── rbacMiddleware.js  # Role & granular permission enforcement
-│       │   ├── rateLimiters.js    # Express rate limiters for login & sensitive actions
-│       │   ├── validateMiddleware.js # Input sanitization & validation rules
+│       │   ├── authMiddleware.js  # JWT Bearer token authentication
+│       │   ├── rbacMiddleware.js  # Role and granular permission enforcement
+│       │   ├── rateLimiters.js    # Sensitive endpoint brute-force protection
+│       │   ├── validateMiddleware.js # Input validation & sanitization rules
 │       │   └── errorMiddleware.js # Global error boundary & 404 handler
+│       ├── models/
+│       │   ├── User.js            # User profile, bcrypt salt rounds, lockout logic
+│       │   ├── RefreshToken.js    # Persistent token families & TTL expiration
+│       │   └── Role.js            # Dynamic system and custom RBAC schemas
+│       ├── routes/                # authRoutes, twoFactorRoutes, userRoutes, roleRoutes
 │       ├── services/
-│       │   ├── cryptoService.js   # SHA-256 hashing, CSPRNG, AES-256-GCM encryption
-│       │   ├── tokenService.js    # JWT generation, rotation, reuse breach detection
-│       │   ├── twoFactorService.js# TOTP (RFC 6238), Email OTP & backup codes
-│       │   └── emailService.js    # Email dispatcher & Ethereal preview logger
+│       │   ├── cryptoService.js   # CSPRNG tokens, SHA-256 hashing, AES-256-GCM
+│       │   ├── tokenService.js    # Access/Refresh JWT generation & rotation
+│       │   ├── twoFactorService.js# TOTP secret generation, QR codes, backup codes
+│       │   └── emailService.js    # HTML email dispatcher & console preview links
 │       ├── templates/             # Responsive HTML email templates
-│       │   ├── verifyEmail.js
-│       │   ├── resetPassword.js
-│       │   ├── otpCode.js
-│       │   └── backupCodes.js
-│       ├── controllers/           # Request handlers with lifecycle flow charts
-│       │   ├── authController.js  # Signup, Verify, Login, Refresh, Logout
-│       │   ├── passwordController.js # Forgot, Reset, Change Password
-│       │   ├── twoFactorController.js # 2FA Setup, Verify, Challenge, Backup codes
-│       │   ├── userController.js  # Profile management & admin user CRUD
-│       │   └── roleController.js  # Custom role creation & permission assignment
-│       ├── routes/
-│       │   ├── authRoutes.js
-│       │   ├── twoFactorRoutes.js
-│       │   ├── userRoutes.js
-│       │   └── roleRoutes.js
-│       └── utils/
-│           ├── apiResponse.js     # Standardized JSON response envelope
-│           └── logger.js          # Timestamped color console logger
+│       └── utils/                 # Standardized ApiResponse envelope & logger
 │
-└── frontend/                      # React JS (JavaScript) Frontend (Vite)
-    ├── .env.example               # Frontend environment template
-    ├── package.json
-    ├── vite.config.js
-    ├── tailwind.config.js         # Design tokens, brand palette & shadows
-    ├── postcss.config.js
-    ├── index.html
+└── frontend/                      # React JS (Vite + Tailwind CSS) Single Page App
+    ├── .env.example               # Frontend environment template (Port 3000)
+    ├── package.json               # Frontend dependencies (react 19, tailwindcss, etc.)
+    ├── vite.config.js             # Vite configuration with strict port 3000 binding
+    ├── tailwind.config.js         # Design tokens, custom brand colors, elevation
+    ├── index.html                 # HTML shell with Inter typography
     └── src/
-        ├── index.css              # Tailwind imports & theme variables
-        ├── main.jsx               # React DOM mount with BrowserRouter
-        ├── App.jsx                # Declarative route tree & AuthProvider
-        ├── constants/
-        │   └── index.js           # Route paths, API endpoints, Roles, Permissions
-        ├── utils/
-        │   ├── helpers.js         # Clipboard copy, file download, formatting
-        │   └── validators.js      # Password strength meter & email validation
-        ├── api/
-        │   ├── client.js          # Axios instance, memory token & silent refresh queue
-        │   ├── authService.js
-        │   ├── twoFactorService.js
-        │   ├── userService.js
-        │   └── roleService.js
-        ├── context/
-        │   └── AuthContext.jsx    # User identity, roles, memory token, login, logout
-        ├── hooks/
-        │   ├── useAuth.js
-        │   ├── useForm.js
-        │   ├── useApi.js
-        │   └── useTwoFactor.js
+        ├── api/                   # Axios client with mutex token refresh queue
         ├── components/
-        │   ├── ui/                # Reusable design system components
-        │   │   ├── Button.jsx     # Variants: primary, secondary, outline, ghost, danger
-        │   │   ├── Input.jsx      # Label, icons, inline errors, password reveal toggle
-        │   │   ├── Card.jsx       # Auth form wrapper with header & footer slots
-        │   │   ├── Alert.jsx      # Success, error, warning, info alerts
-        │   │   ├── Spinner.jsx    # Accessible SVG loading indicator
-        │   │   ├── OTPInput.jsx   # 6-digit segmented auto-advancing input
-        │   │   ├── QRCodeDisplay.jsx # QR code viewer with copyable secret
-        │   │   ├── Badge.jsx      # Role and permission pills
-        │   │   └── Modal.jsx      # Accessible dialog wrapper
-        │   ├── layout/
-        │   │   ├── Navbar.jsx     # Responsive navigation with user info & logout
-        │   │   ├── AuthLayout.jsx # Centered layout with atmospheric glow
-        │   │   └── DashboardLayout.jsx
-        │   └── common/
-        │       ├── ProtectedRoute.jsx
-        │       ├── RoleRoute.jsx
-        │       └── GuestRoute.jsx
-        └── pages/
-            ├── auth/
-            │   ├── LoginPage.jsx
-            │   ├── SignUpPage.jsx
-            │   ├── VerifyEmailPage.jsx
-            │   ├── ForgotPasswordPage.jsx
-            │   ├── ResetPasswordPage.jsx
-            │   └── TwoFactorChallengePage.jsx
-            ├── dashboard/
-            │   └── DashboardPage.jsx # Overview, Role badge, Live Permission tester
-            ├── settings/
-            │   ├── SettingsPage.jsx # Profile, 2FA status, Backup codes modal
-            │   ├── TwoFactorSetupPage.jsx # 3-step wizard (QR, OTP, Backup codes)
-            │   └── ChangePasswordPage.jsx
-            ├── admin/
-            │   └── RoleManagementPage.jsx # Custom role & permission management
-            ├── UnauthorizedPage.jsx # 403 Forbidden screen
-            └── NotFoundPage.jsx     # 404 screen
+        │   ├── common/            # ProtectedRoute, RoleRoute, GuestRoute
+        │   ├── layout/            # Navbar, AuthLayout, DashboardLayout
+        │   └── ui/                # Button, Input, Card, Modal, OTPInput, QRCode, Badge, Alert
+        ├── context/               # AuthContext (global state, silent refresh, login/logout)
+        ├── hooks/                 # useAuth, useForm, useTwoFactor, useApi
+        ├── pages/
+        │   ├── auth/              # Login, SignUp, VerifyEmail, Forgot/ResetPassword, 2FA Challenge
+        │   ├── dashboard/         # User dashboard & live interactive RBAC permission tester
+        │   ├── settings/          # Profile settings, 2FA 3-step wizard, change password
+        │   └── admin/             # Role Management & dynamic permission console
+        └── utils/                 # Password strength meter, clipboard, file export
 ```
 
 ---
@@ -182,12 +294,13 @@ authentication/
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
-- **Node.js** v18+ and **npm** v9+
-- **MongoDB** (Local daemon or MongoDB Atlas connection string)
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
+- **MongoDB**: (Optional) Local daemon on `localhost:27017` or Atlas URI. *If none is detected, the backend will automatically initialize an in-memory database!*
 
 ---
 
-### 1. Backend Setup
+### Step 1: Start the Backend Service (Port 5001)
 
 ```bash
 cd authentication/backend
@@ -195,21 +308,20 @@ cd authentication/backend
 # 1. Install dependencies
 npm install
 
-# 2. Configure environment variables
+# 2. Configure environment (pre-configured with safe defaults)
 cp .env.example .env
 
 # 3. Start development server with file watching
 npm run dev
 ```
 
-The backend server will start on `http://localhost:5001`.
-
-#### Development Email Preview (Zero-Setup)
-If `SMTP_HOST` is left empty in `.env`, Nodemailer automatically initializes an **Ethereal test mailer** and prints clickable preview links directly in your terminal console!
+The backend server starts on **`http://localhost:5001`**.
+- Health Check: `http://localhost:5001/api/v1/health`
+- Live Email Previews: Clickable Ethereal URLs are logged directly to the terminal when emails are sent.
 
 ---
 
-### 2. Frontend Setup
+### Step 2: Start the Frontend Application (Port 3000)
 
 ```bash
 cd authentication/frontend
@@ -217,100 +329,237 @@ cd authentication/frontend
 # 1. Install dependencies
 npm install
 
-# 2. Configure environment variables
+# 2. Configure environment (pre-configured to target port 5001)
 cp .env.example .env
 
-# 3. Start development server
+# 3. Start Vite development server
 npm run dev
 ```
 
-Open your browser and navigate to `http://localhost:3000`.
+Open your browser and navigate to **`http://localhost:3000`**.
 
 ---
 
 ## 📡 API Endpoints Reference
 
-### Authentication (`/api/v1/auth`)
+All API routes follow a standardized JSON envelope structure:
+```json
+{
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": { ... }
+}
+```
 
-| Method | Endpoint | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/signup` | Public | Register a new user account |
-| `POST` | `/verify-email` | Public | Confirm account email via link token |
-| `POST` | `/resend-verification` | Public | Resend account activation email |
-| `POST` | `/login` | Public | Authenticate credentials (returns tokens or 2FA challenge) |
-| `POST` | `/refresh` | Public (Cookie) | Rotate Refresh Token and receive new Access Token |
-| `POST` | `/logout` | Public (Cookie) | Revoke Refresh Token in DB and clear cookie |
-| `POST` | `/forgot-password` | Public | Request a 1-hour password reset link |
-| `POST` | `/reset-password/:token` | Public | Set new password using reset token |
-| `POST` | `/change-password` | Authenticated | Change password (verifies current password) |
-| `GET` | `/me` | Authenticated | Retrieve authenticated user profile and permissions |
+### 1. Authentication Endpoints (`/api/v1/auth`)
 
-### Two-Factor Authentication (`/api/v1/auth/2fa`)
+| Method | Endpoint | Access Level | Description |
+|---|---|---|---|
+| `POST` | `/signup` | Public | Register new user; dispatches verification email |
+| `POST` | `/verify-email` | Public | Activate account using SHA-256 email token |
+| `POST` | `/resend-verification`| Public | Request new verification email link |
+| `POST` | `/login` | Public | Authenticate; returns tokens or triggers 2FA challenge |
+| `POST` | `/refresh` | Public (Cookie) | Rotate refresh token; issues new access/refresh pair |
+| `POST` | `/logout` | Public (Cookie) | Invalidate refresh token in DB; clears cookie |
+| `POST` | `/forgot-password` | Public | Dispatches 1-hour password reset token link |
+| `POST` | `/reset-password/:token` | Public | Sets new password via token; revokes prior sessions |
+| `POST` | `/change-password` | Authenticated | Updates password (requires current password check) |
+| `GET` | `/me` | Authenticated | Returns profile, active role, and granted permissions |
 
-| Method | Endpoint | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/setup-totp` | Authenticated | Generate TOTP secret and scannable QR Code Data URL |
-| `POST` | `/enable-totp` | Authenticated | Verify 6-digit code, activate TOTP, and issue backup codes |
-| `POST` | `/send-email-otp` | Public / Auth | Dispatch a 6-digit numeric OTP to registered email |
-| `POST` | `/enable-email` | Authenticated | Verify email OTP and activate Email 2FA |
-| `POST` | `/disable` | Authenticated | Disable 2FA (requires password verification) |
-| `POST` | `/verify-challenge`| Public (MFA Ticket) | Verify TOTP, Email OTP, or Backup Code on login |
-| `POST` | `/backup-codes` | Authenticated | Regenerate 8 emergency recovery backup codes |
+---
 
-### User Administration (`/api/v1/users`)
+### 2. Two-Factor Authentication (`/api/v1/auth/2fa`)
 
-| Method | Endpoint | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/me` | Authenticated | Get current user's profile |
-| `PUT` | `/me` | Authenticated | Update current user's display name |
-| `GET` | `/` | `users:read` | Paginated list of user accounts |
+| Method | Endpoint | Access Level | Description |
+|---|---|---|---|
+| `POST` | `/setup-totp` | Authenticated | Generates Base32 secret and QR code data URL |
+| `POST` | `/enable-totp` | Authenticated | Verifies 6-digit TOTP; activates 2FA; issues 8 backup codes |
+| `POST` | `/send-email-otp` | Public / Auth | Dispatches 6-digit numeric OTP to registered email |
+| `POST` | `/enable-email` | Authenticated | Verifies email OTP and activates Email 2FA |
+| `POST` | `/verify-challenge`| Public (MFA Ticket) | Verifies TOTP, Email OTP, or Backup Code during login |
+| `POST` | `/backup-codes` | Authenticated | Regenerates 8 fresh emergency backup recovery codes |
+| `POST` | `/disable` | Authenticated | Deactivates 2FA (requires current password verification) |
+
+---
+
+### 3. User Administration (`/api/v1/users`)
+
+| Method | Endpoint | Access Level | Description |
+|---|---|---|---|
+| `GET` | `/me` | Authenticated | Fetch current user's profile |
+| `PUT` | `/me` | Authenticated | Update user display name |
+| `GET` | `/` | `users:read` | Paginated list of users (Search & filter) |
 | `DELETE` | `/:id` | `users:delete` | Delete user account by ID |
 
-### Dynamic RBAC & Roles (`/api/v1/roles`)
+---
 
-| Method | Endpoint | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | Authenticated | List all system & custom roles + available permissions |
+### 4. Dynamic Roles & Permissions (`/api/v1/roles`)
+
+| Method | Endpoint | Access Level | Description |
+|---|---|---|---|
+| `GET` | `/` | Authenticated | List all system/custom roles and permission catalog |
 | `POST` | `/` | `roles:manage` | Create a new custom role with selected permissions |
 | `PUT` | `/:name/permissions` | `roles:manage` | Update permissions assigned to a custom role |
-| `POST` | `/assign` | `roles:manage` | Assign a role to a specific user |
+| `POST` | `/assign` | `roles:manage` | Assign a role to a specific user account |
 
 ---
 
-## 🛡️ Security Best Practices Implemented
+## 🛡️ Security Architecture & Threat Model
 
-1. **Memory Access Tokens**: The client never persists raw JWT access tokens in `localStorage` or `sessionStorage`, mitigating cross-site scripting (XSS) credential exfiltration.
-2. **HTTP-Only Refresh Cookie**: Sent with `httpOnly: true`, `sameSite: 'lax'`, and `secure: true` (in production) to neutralize CSRF and script snooping.
-3. **Automatic Token Rotation**: Every refresh produces a new token pair and revokes the predecessor.
-4. **Reuse Breach Detection**: Detecting already-revoked refresh tokens triggers an immediate emergency shutdown of the entire token family lineage.
-5. **AES-256-GCM Encryption**: TOTP secrets are encrypted using authenticated 256-bit encryption before hitting MongoDB.
-6. **Token Hashing at Rest**: Verification tokens, password reset tokens, refresh tokens, and backup codes are all stored as SHA-256 hashes.
-7. **Rate Limiting**: Brute-force protection on `/login` (5 attempts / 15m), `/auth/2fa/*` (5 attempts / 15m), and `/forgot-password` (3 attempts / 15m).
-8. **Account Lockout**: 5 consecutive password failures lock the account for 15 minutes.
+| Threat / Attack Vector | Mitigation Strategy Implemented |
+|---|---|
+| **Cross-Site Scripting (XSS)** | Access tokens are stored strictly in **JavaScript memory** (never in `localStorage` or `sessionStorage`). If an XSS vulnerability occurs elsewhere, tokens cannot be extracted from storage. |
+| **Cross-Site Request Forgery (CSRF)**| Refresh tokens are stored in `HttpOnly`, `SameSite: Strict`, and `Secure` cookies. State-changing requests require a Bearer token in the `Authorization` header. |
+| **Token Theft & Replay Attacks** | **Refresh Token Rotation & Families**: Every refresh invalidates the previous token. Presenting an already-rotated token triggers **Family Revocation**, immediately terminating all sessions in that family. |
+| **Credential Brute-Forcing** | **Account Lockout**: 5 consecutive incorrect passwords automatically lock the account for 15 minutes. |
+| **Endpoint Flooding (DoS)** | **Express Rate Limiters**: Strict rate limiting applied to `/login` (5 req / 15m), `/auth/2fa/*` (5 req / 15m), and `/forgot-password` (3 req / 15m). |
+| **Secret Compromise at Rest** | **AES-256-GCM Encryption**: TOTP secrets are encrypted with a 32-byte master key and unique 12-byte IVs before hitting MongoDB. |
+| **Timing Attacks** | Constant-time comparisons using `crypto.timingSafeEqual()` for hash and token verifications. |
 
 ---
 
-## 🔌 Integrating Into Your Own Project
+## 🧪 Automated Testing Suites (100% Pass Rate)
 
-### Option A: Integrate the Entire Full-Stack Solution
-1. Copy `authentication/backend` to your server directory.
-2. Configure `.env` with your `MONGODB_URI` and SMTP provider.
-3. Copy `authentication/frontend/src/components/ui`, `src/api`, `src/context`, and `src/hooks` into your React application.
-4. Wrap your app with `<AuthProvider>` and import `apiClient`.
+### 1. Real Chrome Browser UI E2E Test Suite (`ui-e2e-suite.js`)
+Controls a real Google Chrome browser via `puppeteer-core` to test user flows from the visual presentation layer:
 
-### Option B: Use Backend Authentication Service Only
-1. Copy `backend/src/` into your existing Express application.
-2. Mount the routes in your Express app:
+```bash
+cd authentication/backend
+node ui-e2e-suite.js
+```
+
+**Results**:
+- ✅ **Phase 1**: Login Page Visual & Interaction Test
+- ✅ **Phase 2**: Sign Up with Dynamic Password Strength Meter (Weak / Fair / Strong)
+- ✅ **Phase 3**: Account Verification via Real Link Navigation
+- ✅ **Phase 4**: Verified Credential Login & Dashboard Redirection
+- ✅ **Phase 5**: Interactive Live RBAC Permission Guard (Live 403 Forbidden verified)
+- ✅ **Phase 6**: 3-Step 2FA Setup Wizard (QR Code + TOTP Verification + 8 Backup Codes)
+- ✅ **Phase 7**: Multi-Step 2FA Login Challenge with Google Authenticator
+- ✅ **Phase 8**: Emergency Backup Code Login & Single-Use Burning
+- ✅ **Phase 9**: Forgot Password Request & Password Reset with Entropy Meter
+- ✅ **Phase 10**: Admin Role Management Console & Admin RBAC Verification
+
+---
+
+### 2. Full-Stack Backend Integration Test Suite (`test-runner.js`)
+Validates all 14 backend lifecycle flows programmatically:
+
+```bash
+cd authentication/backend
+node test-runner.js
+```
+
+**Results**:
+- ✅ **Test 1**: System Health Probe (`/api/v1/health`)
+- ✅ **Test 2**: User Registration with SHA-256 Token Dispatch
+- ✅ **Test 3**: Unverified Account Gate (403 Forbidden)
+- ✅ **Test 4**: Cryptographic Email Verification
+- ✅ **Test 5**: Verified Login (Access Token + HttpOnly Refresh Cookie)
+- ✅ **Test 6**: Protected Route Access (`/auth/me`) via Bearer Token
+- ✅ **Test 7**: Silent Refresh Token Rotation
+- ✅ **Test 8**: Token Reuse Detection & Emergency Family Revocation
+- ✅ **Test 9**: 2FA TOTP Activation & AES-256-GCM Encryption
+- ✅ **Test 10**: Multi-Step MFA Challenge Issuance (`mfaTicket`)
+- ✅ **Test 11**: TOTP Challenge Code Verification & Session Grant
+- ✅ **Test 12**: Backup Recovery Code Authentication & Single-Use Burning
+- ✅ **Test 13**: RBAC Permission Guard (`users:read` blocked for standard user)
+- ✅ **Test 14**: Admin RBAC Authorization (`users:read` granted to admin)
+
+---
+
+## 🔌 Integration Guide: Drop In to Your Project
+
+### Option A: Use the Pre-Built UI in Your React Project
+
+1. Copy the design system components:
+   ```
+   src/components/ui/     -> (Button, Input, Card, Modal, OTPInput, Badge, Alert)
+   src/components/common/ -> (ProtectedRoute, RoleRoute, GuestRoute)
+   src/context/           -> (AuthContext.jsx)
+   src/hooks/             -> (useAuth.js, useForm.js, useTwoFactor.js)
+   src/api/               -> (client.js, authService.js)
+   ```
+2. Wrap your application tree with `<AuthProvider>`:
+   ```jsx
+   import { AuthProvider } from './context/AuthContext';
+
+   export default function App() {
+     return (
+       <AuthProvider>
+         <YourRoutes />
+       </AuthProvider>
+     );
+   }
+   ```
+3. Protect private routes with `<ProtectedRoute>` or `<RoleRoute>`:
+   ```jsx
+   <Route
+     path="/admin"
+     element={
+       <RoleRoute allowedRoles={['admin']}>
+         <AdminPage />
+       </RoleRoute>
+     }
+   />
+   ```
+4. Access auth state anywhere in your components:
+   ```jsx
+   import { useAuth } from './hooks/useAuth';
+
+   const MyComponent = () => {
+     const { user, isAuthenticated, hasPermission, logout } = useAuth();
+
+     return (
+       <div>
+         <h1>Hello, {user?.name}!</h1>
+         {hasPermission('users:delete') && <button>Delete User</button>}
+         <button onClick={logout}>Sign Out</button>
+       </div>
+     );
+   };
+   ```
+
+---
+
+### Option B: Use the Express Backend Service
+
+1. Copy `authentication/backend/src/` into your Express project.
+2. Mount the routes into your Express application:
    ```javascript
+   import express from 'express';
+   import cookieParser from 'cookie-parser';
    import authRoutes from './routes/authRoutes.js';
    import twoFactorRoutes from './routes/twoFactorRoutes.js';
-   import { verifyAuth } from './middleware/authMiddleware.js';
+   import userRoutes from './routes/userRoutes.js';
+   import roleRoutes from './routes/roleRoutes.js';
+
+   const app = express();
+   app.use(express.json());
+   app.use(cookieParser());
 
    app.use('/api/v1/auth', authRoutes);
    app.use('/api/v1/auth/2fa', twoFactorRoutes);
+   app.use('/api/v1/users', userRoutes);
+   app.use('/api/v1/roles', roleRoutes);
+   ```
+3. Protect individual endpoints using the middleware:
+   ```javascript
+   import { verifyAuth } from './middleware/authMiddleware.js';
+   import { requireRole, requirePermission } from './middleware/rbacMiddleware.js';
+
+   // Protected by authenticated session
+   app.get('/api/v1/profile', verifyAuth, getProfile);
+
+   // Protected by role
+   app.get('/api/v1/admin/audit', verifyAuth, requireRole(['admin']), getAuditLogs);
+
+   // Protected by granular permission
+   app.delete('/api/v1/posts/:id', verifyAuth, requirePermission(['content:delete']), deletePost);
    ```
 
 ---
 
 ## 📄 License
-This module is licensed under the [MIT License](LICENSE). Free to use and modify for personal, educational, and commercial projects!
+
+This project is part of the **Developer Backpack** and is released under the [MIT License](LICENSE). You are free to use, modify, distribute, and embed this code in personal, educational, and commercial projects.
