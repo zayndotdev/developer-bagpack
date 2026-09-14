@@ -202,7 +202,7 @@ cp .env.example .env
 npm run dev
 ```
 
-The backend server will start on `http://localhost:5000`.
+The backend server will start on `http://localhost:5001`.
 
 #### Development Email Preview (Zero-Setup)
 If `SMTP_HOST` is left empty in `.env`, Nodemailer automatically initializes an **Ethereal test mailer** and prints clickable preview links directly in your terminal console!
@@ -224,7 +224,7 @@ cp .env.example .env
 npm run dev
 ```
 
-Open your browser and navigate to `http://localhost:5173`.
+Open your browser and navigate to `http://localhost:3000`.
 
 ---
 

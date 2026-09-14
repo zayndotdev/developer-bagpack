@@ -32,12 +32,12 @@ const createRateLimitHandler = (message) => (req, res) => {
 };
 
 /**
- * Login Rate Limiter: Max 5 attempts per 15 minutes per IP.
+ * Login Rate Limiter: Max 5 attempts per 15 minutes per IP in production.
  */
 export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5,
-  skip: () => process.env.NODE_ENV === 'test',
+  skip: () => process.env.NODE_ENV !== 'production',
   standardHeaders: true,
   legacyHeaders: false,
   handler: createRateLimitHandler(
@@ -47,12 +47,12 @@ export const loginLimiter = rateLimit({
 
 /**
  * Sensitive Action Limiter: Used for Forgot Password and Resend Verification Email.
- * Max 3 requests per 15 minutes per IP to prevent email flooding.
+ * Max 3 requests per 15 minutes per IP in production.
  */
 export const emailActionLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 3,
-  skip: () => process.env.NODE_ENV === 'test',
+  skip: () => process.env.NODE_ENV !== 'production',
   standardHeaders: true,
   legacyHeaders: false,
   handler: createRateLimitHandler(
@@ -61,13 +61,12 @@ export const emailActionLimiter = rateLimit({
 });
 
 /**
- * 2FA Challenge Limiter: Max 5 attempts per 15 minutes per IP.
- * Prevents automated OTP code guessing.
+ * 2FA Challenge Limiter: Max 5 attempts per 15 minutes per IP in production.
  */
 export const twoFactorLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
-  skip: () => process.env.NODE_ENV === 'test',
+  skip: () => process.env.NODE_ENV !== 'production',
   standardHeaders: true,
   legacyHeaders: false,
   handler: createRateLimitHandler(
@@ -76,12 +75,12 @@ export const twoFactorLimiter = rateLimit({
 });
 
 /**
- * Account Registration Limiter: Max 5 registrations per hour per IP.
+ * Account Registration Limiter: Max 5 registrations per hour per IP in production.
  */
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 5,
-  skip: () => process.env.NODE_ENV === 'test',
+  skip: () => process.env.NODE_ENV !== 'production',
   standardHeaders: true,
   legacyHeaders: false,
   handler: createRateLimitHandler(

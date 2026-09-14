@@ -68,8 +68,8 @@ validateEnv();
 export const env = Object.freeze({
   NODE_ENV: process.env.NODE_ENV || 'development',
   IS_PROD: process.env.NODE_ENV === 'production',
-  PORT: parseInt(process.env.PORT, 10) || 5000,
-  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
+  PORT: parseInt(process.env.PORT, 10) || 5001,
+  CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
 
   // Database
   MONGODB_URI:

@@ -43,7 +43,7 @@ export const getAccessToken = () => {
 
 // Create configured Axios instance
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/v1',
   withCredentials: true, // Required for sending & receiving HTTP-only refresh cookies
   headers: {
     'Content-Type': 'application/json',

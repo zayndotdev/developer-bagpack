@@ -75,6 +75,10 @@ export const sendVerificationEmail = async (email, name, rawVerificationToken) =
   const verifyUrl = `${env.CLIENT_URL}/verify-email?token=${rawVerificationToken}&email=${encodeURIComponent(email)}`;
   const html = getVerifyEmailHtml({ name, verifyUrl });
 
+  if (env.NODE_ENV !== 'production') {
+    logger.info(`[DEV HELPER] Email Verification URL: ${verifyUrl}`);
+  }
+
   return sendMailInternal({
     to: email,
     subject: '🎒 Verify your Developer Backpack account',
@@ -89,6 +93,10 @@ export const sendPasswordResetEmail = async (email, name, rawResetToken) => {
   const resetUrl = `${env.CLIENT_URL}/reset-password/${rawResetToken}`;
   const html = getResetPasswordHtml({ name, resetUrl });
 
+  if (env.NODE_ENV !== 'production') {
+    logger.info(`[DEV HELPER] Password Reset URL: ${resetUrl}`);
+  }
+
   return sendMailInternal({
     to: email,
     subject: '🔐 Reset your Developer Backpack password',
@@ -101,6 +109,10 @@ export const sendPasswordResetEmail = async (email, name, rawResetToken) => {
  */
 export const sendOtpEmail = async (email, name, otp) => {
   const html = getOtpCodeHtml({ name, otp });
+
+  if (env.NODE_ENV !== 'production') {
+    logger.info(`[DEV HELPER] 2FA Email OTP Code for ${email}: ${otp}`);
+  }
 
   return sendMailInternal({
     to: email,

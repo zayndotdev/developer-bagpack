@@ -93,7 +93,7 @@ export default function App() {
 
         {/* Email Verification & Password Reset from Links */}
         <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
-        <Route path={ROUTES.RESET_PASSWORD(':token')} element={<ResetPasswordPage />} />
+        <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
 
         {/* 2FA Login Challenge (Part of multi-step login flow) */}
         <Route path={ROUTES.TWO_FACTOR_CHALLENGE} element={<TwoFactorChallengePage />} />
