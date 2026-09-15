@@ -27,6 +27,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { ROUTES, ROLES } from '../../constants';
 import { Badge } from '../ui/Badge.jsx';
 import { Button } from '../ui/Button.jsx';
+import { UserButton } from '../ui/UserButton.jsx';
 import {
   Shield,
   LayoutDashboard,
@@ -129,34 +130,7 @@ export const Navbar = () => {
           {/* Desktop Right User Menu */}
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
-              <>
-                <div className="flex items-center gap-2.5 pr-2">
-                  <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-xs">
-                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-slate-800 leading-tight">
-                      {user?.name}
-                    </span>
-                    <span className="text-[11px] text-slate-400 leading-tight">
-                      {user?.email}
-                    </span>
-                  </div>
-                  <Badge variant={user?.role} size="sm">
-                    {user?.role}
-                  </Badge>
-                </div>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  leftIcon={<LogOut className="w-4 h-4" />}
-                  className="text-slate-500 hover:text-rose-600"
-                >
-                  Sign Out
-                </Button>
-              </>
+              <UserButton />
             ) : (
               <div className="flex items-center gap-2">
                 <Link to={ROUTES.LOGIN}>
