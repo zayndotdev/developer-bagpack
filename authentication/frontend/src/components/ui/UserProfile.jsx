@@ -50,6 +50,7 @@ import { Button } from './Button.jsx';
 import { Input } from './Input.jsx';
 import { Alert } from './Alert.jsx';
 import { Spinner } from './Spinner.jsx';
+import { GoogleIcon, GitHubIcon } from './SocialLogins.jsx';
 import { copyToClipboard, downloadTextFile } from '../../utils/helpers.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants';
@@ -403,6 +404,62 @@ export const UserProfile = ({
                 </Button>
               </div>
             </form>
+
+            {/* Connected Social Accounts (Clerk-style) */}
+            <div className="pt-6 border-t border-slate-200/80 space-y-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Connected Accounts</h3>
+                <p className="text-xs text-slate-500">
+                  Manage external OAuth accounts connected to your profile for single-click sign-in.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                {/* Google Provider Card */}
+                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-slate-50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/80 flex items-center justify-center shadow-xs">
+                      <GoogleIcon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-slate-900">Google</div>
+                      <div className="text-[11px] text-slate-500">Sign in with Google identity</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = authService.getOAuthUrl('google');
+                    }}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 shadow-xs transition-all cursor-pointer"
+                  >
+                    Connect
+                  </button>
+                </div>
+
+                {/* GitHub Provider Card */}
+                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-slate-50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center shadow-xs text-white">
+                      <GitHubIcon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-slate-900">GitHub</div>
+                      <div className="text-[11px] text-slate-500">Sign in with GitHub profile</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = authService.getOAuthUrl('github');
+                    }}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-900 bg-slate-900 hover:bg-black text-white shadow-xs transition-all cursor-pointer"
+                  >
+                    Connect
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

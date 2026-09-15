@@ -103,4 +103,16 @@ export const authService = {
     const response = await apiClient.delete('/auth/sessions/other');
     return response.data;
   },
+
+  // Get OAuth provider configuration status
+  getOAuthProviders: async () => {
+    const response = await apiClient.get('/auth/oauth/providers');
+    return response.data;
+  },
+
+  // Initiate OAuth redirect URL
+  getOAuthUrl: (provider) => {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/v1';
+    return `${baseUrl}/auth/oauth/${provider}`;
+  },
 };

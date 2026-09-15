@@ -39,6 +39,7 @@ import twoFactorRoutes from './src/routes/twoFactorRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
 import roleRoutes from './src/routes/roleRoutes.js';
 import sessionRoutes from './src/routes/sessionRoutes.js';
+import oauthRoutes from './src/routes/oauthRoutes.js';
 import {
   notFoundHandler,
   errorHandler,
@@ -111,6 +112,9 @@ app.use('/api/v1/roles', roleRoutes);
 
 // Active Devices & Session Management routes
 app.use('/api/v1/auth/sessions', sessionRoutes);
+
+// Social Logins OAuth 2.0 routes (Google & GitHub)
+app.use('/api/v1/auth/oauth', oauthRoutes);
 
 // ------------------------------------------------------------------------------
 // 3. ERROR HANDLING BOUNDARIES

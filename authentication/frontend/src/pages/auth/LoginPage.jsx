@@ -31,6 +31,7 @@ import { Card } from '../../components/ui/Card.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Alert } from '../../components/ui/Alert.jsx';
+import { SocialLogins } from '../../components/ui/SocialLogins.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useForm } from '../../hooks/useForm.js';
 import { isValidEmail } from '../../utils/validators.js';
@@ -40,10 +41,11 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const oauthInfo = searchParams.get('oauth_info');
+  const oauthError = searchParams.get('error');
 
-  const [formError, setFormError] = useState(
-    location.state?.message ? null : null
-  );
+  const [formError, setFormError] = useState(null);
   const [infoMessage] = useState(location.state?.message || null);
 
   const validate = (vals) => {
@@ -112,9 +114,15 @@ export const LoginPage = () => {
           </div>
         }
       >
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <div className="space-y-4">
+          {oauthInfo && <Alert variant="info">{oauthInfo}</Alert>}
+          {oauthError && <Alert variant="error">{oauthError}</Alert>}
           {infoMessage && <Alert variant="info">{infoMessage}</Alert>}
           {formError && <Alert variant="error">{formError}</Alert>}
+
+          <SocialLogins mode="signin" />
+
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
 
           {/* Email field */}
           <Input
@@ -174,6 +182,7 @@ export const LoginPage = () => {
             </Button>
           </div>
         </form>
+        </div>
       </Card>
     </AuthLayout>
   );

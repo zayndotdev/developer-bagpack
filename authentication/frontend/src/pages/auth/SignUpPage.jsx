@@ -29,6 +29,7 @@ import { Card } from '../../components/ui/Card.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Alert } from '../../components/ui/Alert.jsx';
+import { SocialLogins } from '../../components/ui/SocialLogins.jsx';
 import { useForm } from '../../hooks/useForm.js';
 import { authService } from '../../api/authService.js';
 import {
@@ -167,8 +168,11 @@ export const SignUpPage = () => {
           </div>
         }
       >
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          {serverError && <Alert variant="error">{serverError}</Alert>}
+        <div className="space-y-4">
+          <SocialLogins mode="signup" />
+
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            {serverError && <Alert variant="error">{serverError}</Alert>}
 
           {/* Full Name */}
           <Input
@@ -272,6 +276,7 @@ export const SignUpPage = () => {
             </Button>
           </div>
         </form>
+        </div>
       </Card>
     </AuthLayout>
   );
