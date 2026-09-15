@@ -38,6 +38,7 @@ import authRoutes from './src/routes/authRoutes.js';
 import twoFactorRoutes from './src/routes/twoFactorRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
 import roleRoutes from './src/routes/roleRoutes.js';
+import sessionRoutes from './src/routes/sessionRoutes.js';
 import {
   notFoundHandler,
   errorHandler,
@@ -107,6 +108,9 @@ app.use('/api/v1/users', userRoutes);
 
 // Dynamic RBAC and Role Management routes
 app.use('/api/v1/roles', roleRoutes);
+
+// Active Devices & Session Management routes
+app.use('/api/v1/auth/sessions', sessionRoutes);
 
 // ------------------------------------------------------------------------------
 // 3. ERROR HANDLING BOUNDARIES

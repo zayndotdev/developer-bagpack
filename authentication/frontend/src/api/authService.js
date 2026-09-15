@@ -85,4 +85,22 @@ export const authService = {
     const response = await apiClient.get(API_ENDPOINTS.ME);
     return response.data;
   },
+
+  // Get active device sessions
+  getSessions: async () => {
+    const response = await apiClient.get('/auth/sessions');
+    return response.data;
+  },
+
+  // Revoke a specific device session
+  revokeSession: async (sessionId) => {
+    const response = await apiClient.delete(`/auth/sessions/${sessionId}`);
+    return response.data;
+  },
+
+  // Revoke all other sessions
+  revokeOtherSessions: async () => {
+    const response = await apiClient.delete('/auth/sessions/other');
+    return response.data;
+  },
 };
