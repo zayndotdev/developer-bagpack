@@ -34,7 +34,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import { ProtectedRoute } from './components/common/ProtectedRoute.jsx';
 import { RoleRoute } from './components/common/RoleRoute.jsx';
 import { GuestRoute } from './components/common/GuestRoute.jsx';
-import { ROUTES, ROLES } from './constants';
+import { ROUTES, ROLES, PERMISSIONS } from './constants';
 
 // Authentication Pages
 import { LoginPage } from './pages/auth/LoginPage.jsx';
@@ -50,6 +50,7 @@ import { SettingsPage } from './pages/settings/SettingsPage.jsx';
 import { TwoFactorSetupPage } from './pages/settings/TwoFactorSetupPage.jsx';
 import { ChangePasswordPage } from './pages/settings/ChangePasswordPage.jsx';
 import { RoleManagementPage } from './pages/admin/RoleManagementPage.jsx';
+import { UserManagementPage } from './pages/admin/UserManagementPage.jsx';
 
 // Status Pages
 import { UnauthorizedPage } from './pages/UnauthorizedPage.jsx';
@@ -135,13 +136,25 @@ export default function App() {
           }
         />
 
-        {/* Role-Protected Route: Admin Role Management Console */}
+        {/* Role-Protected Route: Dynamic Role Management Console */}
         <Route
           path={ROUTES.ADMIN_ROLES}
           element={
             <ProtectedRoute>
-              <RoleRoute allowedRoles={[ROLES.ADMIN]}>
+              <RoleRoute requiredPermission={PERMISSIONS.ROLES_MANAGE}>
                 <RoleManagementPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Dynamic User Administration Console */}
+        <Route
+          path={ROUTES.ADMIN_USERS}
+          element={
+            <ProtectedRoute>
+              <RoleRoute requiredPermission={PERMISSIONS.USERS_READ}>
+                <UserManagementPage />
               </RoleRoute>
             </ProtectedRoute>
           }

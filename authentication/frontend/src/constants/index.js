@@ -39,6 +39,7 @@ export const ROUTES = Object.freeze({
   SETTINGS_2FA: '/settings/2fa/setup',
   SETTINGS_PASSWORD: '/settings/password',
   ADMIN_ROLES: '/admin/roles',
+  ADMIN_USERS: '/admin/users',
 
   // Error & Status Pages
   UNAUTHORIZED: '/unauthorized',

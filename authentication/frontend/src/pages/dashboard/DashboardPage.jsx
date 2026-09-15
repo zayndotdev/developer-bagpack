@@ -38,6 +38,7 @@ import {
   ArrowRight,
   ExternalLink,
   Sparkles,
+  Users,
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout.jsx';
 import { Card } from '../../components/ui/Card.jsx';
@@ -109,12 +110,25 @@ export const DashboardPage = () => {
                   Manage Security & 2FA
                 </Button>
               </Link>
-              {hasRole(ROLES.ADMIN) && (
+              {(hasRole(ROLES.ADMIN) || hasPermission(PERMISSIONS.USERS_READ)) && (
+                <Link to={ROUTES.ADMIN_USERS}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                    leftIcon={<Users className="w-4 h-4" />}
+                  >
+                    User Directory
+                  </Button>
+                </Link>
+              )}
+              {(hasRole(ROLES.ADMIN) || hasPermission(PERMISSIONS.ROLES_MANAGE)) && (
                 <Link to={ROUTES.ADMIN_ROLES}>
                   <Button
                     variant="outline"
                     size="sm"
                     className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                    leftIcon={<Shield className="w-4 h-4" />}
                   >
                     Custom Roles Console
                   </Button>

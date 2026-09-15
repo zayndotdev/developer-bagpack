@@ -30,20 +30,20 @@ import {
   verifyLoginChallenge,
   regenerateBackupCodes,
 } from '../controllers/twoFactorController.js';
-import { verifyAuth } from '../middleware/authMiddleware.js';
+import { verifyAuth, optionalAuth } from '../middleware/authMiddleware.js';
 import { twoFactorLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
 
 // ------------------------------------------------------------------------------
-// PUBLIC 2FA CHALLENGE VERIFICATION (Called during multi-step login)
+// PUBLIC 2FA CHALLENGE VERIFICATION (Called during multi-step login or settings enrollment)
 // ------------------------------------------------------------------------------
 
 // Verify 2FA challenge code using temporary mfaTicket
 router.post('/verify-challenge', twoFactorLimiter, verifyLoginChallenge);
 
-// Dispatch an Email OTP during login challenge
-router.post('/send-email-otp', twoFactorLimiter, requestEmailOtp);
+// Dispatch an Email OTP during login challenge (with mfaTicket) or settings enrollment (with optionalAuth)
+router.post('/send-email-otp', twoFactorLimiter, optionalAuth, requestEmailOtp);
 
 // ------------------------------------------------------------------------------
 // PROTECTED 2FA MANAGEMENT (Settings & Enrollment)

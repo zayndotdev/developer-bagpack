@@ -28,7 +28,7 @@ import {
   assignRoleToUser,
 } from '../controllers/roleController.js';
 import { verifyAuth } from '../middleware/authMiddleware.js';
-import { requirePermission } from '../middleware/rbacMiddleware.js';
+import { requirePermission, requireAnyPermission } from '../middleware/rbacMiddleware.js';
 import { PERMISSIONS } from '../config/constants.js';
 
 const router = Router();
@@ -46,6 +46,10 @@ router.put(
   requirePermission(PERMISSIONS.ROLES_MANAGE),
   updateRolePermissions
 );
-router.post('/assign', requirePermission(PERMISSIONS.ROLES_MANAGE), assignRoleToUser);
+router.post(
+  '/assign',
+  requireAnyPermission(PERMISSIONS.ROLES_MANAGE, PERMISSIONS.USERS_WRITE),
+  assignRoleToUser
+);
 
 export default router;

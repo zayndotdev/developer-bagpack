@@ -86,3 +86,33 @@ export const verifyAuth = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Optional authentication middleware:
+ * If an Authorization Bearer token is provided, validates it and attaches req.user.
+ * If no token is provided, passes through silently (for endpoints supporting both authenticated and ticket-based unauthenticated callers).
+ */
+export const optionalAuth = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const decoded = verifyAccessToken(token);
+        const user = await User.findById(decoded.sub);
+        if (user && !user.isLocked()) {
+          req.user = user;
+          req.tokenPayload = decoded;
+        }
+      } catch {
+        // Soft fail for optional auth (e.g. token expired, unauthenticated login challenge)
+      }
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+

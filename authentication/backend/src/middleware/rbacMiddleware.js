@@ -39,18 +39,16 @@ import { ApiResponse } from '../utils/apiResponse.js';
 export const getUserEffectivePermissions = async (user) => {
   const permissionsSet = new Set();
 
-  // 1. Check predefined role mapping
-  if (DEFAULT_ROLE_PERMISSIONS[user.role]) {
+  // 1. Check dynamic role in MongoDB first (allows live admin customization of all roles including moderator & user)
+  const roleDoc = await Role.findOne({ name: user.role });
+  if (roleDoc && Array.isArray(roleDoc.permissions)) {
+    roleDoc.permissions.forEach((perm) => permissionsSet.add(perm));
+  } else if (DEFAULT_ROLE_PERMISSIONS[user.role]) {
+    // Fallback to static constants if role document is not yet in MongoDB
     DEFAULT_ROLE_PERMISSIONS[user.role].forEach((perm) => permissionsSet.add(perm));
-  } else {
-    // 2. Check dynamic custom role in MongoDB
-    const customRoleDoc = await Role.findOne({ name: user.role });
-    if (customRoleDoc && Array.isArray(customRoleDoc.permissions)) {
-      customRoleDoc.permissions.forEach((perm) => permissionsSet.add(perm));
-    }
   }
 
-  // 3. Merge user-specific custom permissions
+  // 2. Merge user-specific custom permissions
   if (Array.isArray(user.customPermissions)) {
     user.customPermissions.forEach((perm) => permissionsSet.add(perm));
   }
@@ -121,3 +119,40 @@ export const requirePermission = (...requiredPermissions) => {
     }
   };
 };
+
+/**
+ * Middleware factory: Enforces that the user has AT LEAST ONE of the specified permissions.
+ * Usage: router.post('/assign', verifyAuth, requireAnyPermission('roles:manage', 'users:write'), controller);
+ */
+export const requireAnyPermission = (...allowedPermissions) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return ApiResponse.unauthorized(res, 'Authentication required.');
+      }
+
+      // Admin role bypasses granular permission checks
+      if (req.user.role === 'admin') {
+        return next();
+      }
+
+      const effectivePermissions = await getUserEffectivePermissions(req.user);
+      const hasAny = allowedPermissions.some((perm) =>
+        effectivePermissions.includes(perm)
+      );
+
+      if (!hasAny) {
+        return ApiResponse.forbidden(
+          res,
+          `Access denied: Requires at least one of: [${allowedPermissions.join(', ')}]`
+        );
+      }
+
+      req.userPermissions = effectivePermissions;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+

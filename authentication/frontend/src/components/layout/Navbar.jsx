@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 
 export const Navbar = () => {
-  const { user, isAuthenticated, logout, hasRole } = useAuth();
+  const { user, isAuthenticated, logout, hasRole, hasPermission } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -81,8 +81,23 @@ export const Navbar = () => {
                   Dashboard
                 </Link>
 
-                {/* Role Management (Admin only) */}
-                {hasRole(ROLES.ADMIN) && (
+                {/* User Management (Dynamic: users:read or Admin) */}
+                {(hasRole(ROLES.ADMIN) || hasPermission('users:read')) && (
+                  <Link
+                    to={ROUTES.ADMIN_USERS}
+                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive(ROUTES.ADMIN_USERS)
+                        ? 'bg-brand-50 text-brand-700'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                  >
+                    <Users className="w-4 h-4" />
+                    Users
+                  </Link>
+                )}
+
+                {/* Role Management (Dynamic: roles:manage or Admin) */}
+                {(hasRole(ROLES.ADMIN) || hasPermission('roles:manage')) && (
                   <Link
                     to={ROUTES.ADMIN_ROLES}
                     className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -91,7 +106,7 @@ export const Navbar = () => {
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                   >
-                    <Users className="w-4 h-4" />
+                    <Shield className="w-4 h-4" />
                     Role Management
                   </Link>
                 )}
@@ -196,13 +211,24 @@ export const Navbar = () => {
                 Dashboard
               </Link>
 
-              {hasRole(ROLES.ADMIN) && (
+              {(hasRole(ROLES.ADMIN) || hasPermission('users:read')) && (
+                <Link
+                  to={ROUTES.ADMIN_USERS}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100 font-medium"
+                >
+                  <Users className="w-4 h-4" />
+                  Users
+                </Link>
+              )}
+
+              {(hasRole(ROLES.ADMIN) || hasPermission('roles:manage')) && (
                 <Link
                   to={ROUTES.ADMIN_ROLES}
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100 font-medium"
                 >
-                  <Users className="w-4 h-4" />
+                  <Shield className="w-4 h-4" />
                   Role Management
                 </Link>
               )}
